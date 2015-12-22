@@ -10,7 +10,7 @@ repositories {
      maven { url "http://repo.maven.apache.org/maven2" }
 }
 dependencies {
-    compile group: 'com.amazonaws', name: 'aws-java-sdk-cloudsearch', version:'1.9.33'
-    compile group: 'org.apache.httpcomponents', name: 'fluent-hc', version:'4.2'
+    compile group: 'com.amazonaws', name: 'aws-java-sdk-cloudsearch', version:'1.9.16'
+    compile group: 'org.apache.httpcomponents', name: 'fluent-hc', version:'4.3.4'
     testCompile group: 'junit', name: 'junit', version:'3.8.1'
 }
