@@ -10,7 +10,6 @@ bin/
 *.iml
 *.ipr
 *.iws
-build.gradle
 build/
 gradle/
 gradlew
