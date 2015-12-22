@@ -1,0 +1,16 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'aws.services.cloudsearchv2'
+version = '1.3'
+
+description = "amazon-cloudsearch-client-java"
+
+repositories {
+     maven { url "http://repo.maven.apache.org/maven2" }
+}
+dependencies {
+    compile group: 'com.amazonaws', name: 'aws-java-sdk-cloudsearch', version:'1.9.33'
+    compile group: 'org.apache.httpcomponents', name: 'fluent-hc', version:'4.2'
+    testCompile group: 'junit', name: 'junit', version:'3.8.1'
+}

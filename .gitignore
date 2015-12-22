@@ -6,10 +6,10 @@ target/*
 bin/
 /target
 .DS_Store
-.gradle/
 *.iml
 *.ipr
 *.iws
+.gradle/
 build/
 gradle/
 gradlew
