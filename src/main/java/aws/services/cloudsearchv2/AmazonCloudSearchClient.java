@@ -179,7 +179,7 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
 	 * @throws JSONException 
 	 */
 	public void addDocument(AmazonCloudSearchAddRequest document) throws AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException, JSONException {
-		sendDocumentRequest(document);
+		updateDocument(document);
 	}
 
 	/**
@@ -192,10 +192,10 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
 	 * @throws JSONException
 	 */
 	public void deleteDocument(AmazonCloudSearchDeleteRequest document) throws AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException, JSONException {
-		sendDocumentRequest(document);
+		updateDocument(document);
 	}
 
-	private void sendDocumentRequest(AmazonCloudSearchDocumentRequest document) throws AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException, JSONException {
+	private void updateDocument(AmazonCloudSearchDocumentRequest document) throws AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException, JSONException {
 		JSONArray docs = new JSONArray();
 		docs.put(toJSON(document));
 		updateDocumentRequest(docs.toString());
@@ -211,7 +211,7 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
 	 * @throws AmazonCloudSearchInternalServerException
 	 */
 	public List<AmazonCloudSearchAddRequest> addDocuments(List<AmazonCloudSearchAddRequest> documents) throws JSONException, AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException {
-		return sendDocumentsRequest(documents);
+		return updateDocuments(documents);
 	}
 
 	/**
@@ -224,10 +224,10 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
 	 * @throws JSONException
 	 */
 	public List<AmazonCloudSearchDeleteRequest> deleteDocuments(List<AmazonCloudSearchDeleteRequest> documents) throws JSONException, AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException {
-		return sendDocumentsRequest(documents);
+		return updateDocuments(documents);
 	}
 
-	private <D extends AmazonCloudSearchDocumentRequest> List<D> sendDocumentsRequest(List<D> documents) throws JSONException, AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException {
+	private <D extends AmazonCloudSearchDocumentRequest> List<D> updateDocuments(List<D> documents) throws JSONException, AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException {
 		JSONArray docs = new JSONArray();
 		int currentRequestByteSize = docs.toString().getBytes().length;
 		int documentsIndex = 0;
