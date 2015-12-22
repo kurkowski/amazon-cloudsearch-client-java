@@ -1,29 +1,11 @@
 package aws.services.cloudsearchv2;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.fluent.Request;
-import org.apache.http.client.fluent.Response;
-import org.apache.http.entity.ContentType;
-
 import aws.services.cloudsearchv2.documents.AmazonCloudSearchAddRequest;
 import aws.services.cloudsearchv2.documents.AmazonCloudSearchDeleteRequest;
+import aws.services.cloudsearchv2.documents.AmazonCloudSearchDocumentRequest;
 import aws.services.cloudsearchv2.search.AmazonCloudSearchQuery;
 import aws.services.cloudsearchv2.search.AmazonCloudSearchResult;
 import aws.services.cloudsearchv2.search.Hit;
-
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
@@ -32,10 +14,25 @@ import com.amazonaws.metrics.RequestMetricCollector;
 import com.amazonaws.util.json.JSONArray;
 import com.amazonaws.util.json.JSONException;
 import com.amazonaws.util.json.JSONObject;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.fluent.Request;
+import org.apache.http.client.fluent.Response;
+import org.apache.http.entity.ContentType;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.util.*;
 
 public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv2.AmazonCloudSearchClient {
     private String searchEndpoint;
     private String documentEndpoint;
+
+	// The maximum request size for an Amazon CloudSearch document request is 5MB
+	public static final int maximumRequestByteSize = 5 * 1024 * 1024;
 
 	/**
      * Constructs a new client to invoke service methods on
@@ -177,11 +174,28 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
 	 * An add operation is only applied to an existing document if the version number specified in the operation is greater than the existing document's version number.
 	 * 
 	 * @param document The document that need to added or updated
-	 * @throws AwsCSMalformedRequestException 
-	 * @throws AwsCSInternalServerException 
+	 * @throws AmazonCloudSearchRequestException
+	 * @throws AmazonCloudSearchInternalServerException
 	 * @throws JSONException 
 	 */
 	public void addDocument(AmazonCloudSearchAddRequest document) throws AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException, JSONException {
+		sendDocumentRequest(document);
+	}
+
+	/**
+	 * A delete operation specifies an existing document that you want to delete.
+	 * A delete operation is only applied to an existing document if the version number specified in the operation is greater than the existing document's version number.
+	 *
+	 * @param document
+	 * @throws AmazonCloudSearchRequestException
+	 * @throws AmazonCloudSearchInternalServerException
+	 * @throws JSONException
+	 */
+	public void deleteDocument(AmazonCloudSearchDeleteRequest document) throws AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException, JSONException {
+		sendDocumentRequest(document);
+	}
+
+	private void sendDocumentRequest(AmazonCloudSearchDocumentRequest document) throws AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException, JSONException {
 		JSONArray docs = new JSONArray();
 		docs.put(toJSON(document));
 		updateDocumentRequest(docs.toString());
@@ -192,51 +206,45 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
 	 * An add operation is only applied to an existing document if the version number specified in the operation is greater than the existing document's version number.
 	 * 
 	 * @param documents The documents that need to added or updated
-	 * @throws JSONException 
-	 * @throws AwsCSMalformedRequestException 
-	 * @throws AwsCSInternalServerException 
-	 */
-	public void addDocuments(List<AmazonCloudSearchAddRequest> documents) throws JSONException, AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException {
-		JSONArray docs = new JSONArray();
-		for(AmazonCloudSearchAddRequest doc : documents) {
-			docs.put(toJSON(doc));
-		}
-		updateDocumentRequest(docs.toString());
-	}
-	
-	
-	/**
-	 * A delete operation specifies an existing document that you want to delete.
-	 * A delete operation is only applied to an existing document if the version number specified in the operation is greater than the existing document's version number.
-	 * 
-	 * @param document
-	 * @throws AwsCSMalformedRequestException
-	 * @throws AwsCSInternalServerException
 	 * @throws JSONException
+	 * @throws AmazonCloudSearchRequestException
+	 * @throws AmazonCloudSearchInternalServerException
 	 */
-	public void deleteDocument(AmazonCloudSearchDeleteRequest document) throws AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException, JSONException {
-		JSONArray docs = new JSONArray();
-		docs.put(toJSON(document));
-		updateDocumentRequest(docs.toString());
-	}	
+	public List<AmazonCloudSearchAddRequest> addDocuments(List<AmazonCloudSearchAddRequest> documents) throws JSONException, AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException {
+		return sendDocumentsRequest(documents);
+	}
 
 	/**
 	 * A delete operation specifies existing documents that you want to delete.
 	 * A delete operation is only applied to an existing document if the version number specified in the operation is greater than the existing document's version number.
 	 * 
-	 * @param document
-	 * @throws AwsCSMalformedRequestException
-	 * @throws AwsCSInternalServerException
+	 * @param documents
+	 * @throws AmazonCloudSearchRequestException
+	 * @throws AmazonCloudSearchInternalServerException
 	 * @throws JSONException
 	 */
-	public void deleteDocuments(List<AmazonCloudSearchDeleteRequest> documents) throws JSONException, AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException {
+	public List<AmazonCloudSearchDeleteRequest> deleteDocuments(List<AmazonCloudSearchDeleteRequest> documents) throws JSONException, AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException {
+		return sendDocumentsRequest(documents);
+	}
+
+	private <D extends AmazonCloudSearchDocumentRequest> List<D> sendDocumentsRequest(List<D> documents) throws JSONException, AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException {
 		JSONArray docs = new JSONArray();
-		for(AmazonCloudSearchDeleteRequest doc : documents) {
-			docs.put(toJSON(doc));
+		int currentRequestByteSize = docs.toString().getBytes().length;
+		int documentsIndex = 0;
+		for(AmazonCloudSearchDocumentRequest doc : documents) {
+			Object docJSONObject = toJSON(doc);
+			currentRequestByteSize += (docJSONObject.toString().getBytes().length) + 1; // Adding 1 byte for comma delimiter
+			if (currentRequestByteSize > maximumRequestByteSize) {
+				break;
+			}
+			docs.put(docJSONObject);
+			documentsIndex++;
 		}
 		updateDocumentRequest(docs.toString());
+
+		return documents.subList(documentsIndex, documents.size());
 	}
-	
+
 	private void updateDocumentRequest(String requestBody) throws AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException {
 	    String responseBody = null;
 	    try {
@@ -279,38 +287,34 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
 		return output.toString();
 	}
 
-	private Object toJSON(AmazonCloudSearchDeleteRequest document) throws JSONException {
+	private Object toJSON(AmazonCloudSearchDocumentRequest document) throws JSONException {
 		JSONObject doc = new JSONObject();
 		doc.put("type", "delete");
 		doc.put("id", document.id.toLowerCase());
 		doc.put("version", document.version);
+
+		if (document instanceof AmazonCloudSearchAddRequest) {
+			AmazonCloudSearchAddRequest addDocument = (AmazonCloudSearchAddRequest)document;
+			doc.put("lang", addDocument.lang);
+
+			JSONObject fields = new JSONObject();
+			for(Map.Entry<String, Object> entry : addDocument.fields.entrySet()) {
+				if(entry.getValue() instanceof Collection) {
+					JSONArray array = new JSONArray();
+					Iterator i = ((Collection)entry.getValue()).iterator();
+					while(i.hasNext()) {
+						array.put(i.next());
+					}
+					fields.put(entry.getKey(), array);
+				} else {
+					fields.put(entry.getKey(), entry.getValue());
+				}
+			}
+			doc.put("fields", fields);
+		}
 		return doc;
 	}
 	
-	private JSONObject toJSON(AmazonCloudSearchAddRequest document) throws JSONException {
-		JSONObject doc = new JSONObject();
-		doc.put("type", "add");
-		doc.put("id", document.id.toLowerCase());
-		doc.put("version", document.version);
-		doc.put("lang", document.lang);
-		
-		JSONObject fields = new JSONObject();
-		for(Map.Entry<String, Object> entry : document.fields.entrySet()) {
-			if(entry.getValue() instanceof Collection) {
-				JSONArray array = new JSONArray();
-				Iterator i = ((Collection)entry.getValue()).iterator();
-				while(i.hasNext()) {
-					array.put(i.next());
-				}
-				fields.put(entry.getKey(), array);
-			} else {
-				fields.put(entry.getKey(), entry.getValue());
-			}
-		}
-		doc.put("fields", fields);
-		return doc;
-	}
-
 	/**
 	 * Get the Search Endpoint set for this Client.
 	 * 

@@ -6,3 +6,13 @@ target/*
 bin/
 /target
 .DS_Store
+.gradle/
+*.iml
+*.ipr
+*.iws
+build.gradle
+build/
+gradle/
+gradlew
+gradlew.bat
+settings.gradle
