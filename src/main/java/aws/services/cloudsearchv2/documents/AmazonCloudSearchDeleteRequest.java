@@ -19,6 +19,6 @@ public class AmazonCloudSearchDeleteRequest extends AmazonCloudSearchDocumentReq
 
     @Override
     public String getRequestType() {
-        return "delete";
+        return DELETE_DOCUMENT_REQUEST_TYPE;
     }
 }

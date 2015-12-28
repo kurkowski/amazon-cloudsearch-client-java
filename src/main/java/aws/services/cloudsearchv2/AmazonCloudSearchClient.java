@@ -195,7 +195,7 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
 		sendDocumentRequest(document);
 	}
 
-	private void sendDocumentRequest(AmazonCloudSearchDocumentRequest document) throws AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException, JSONException {
+	public void sendDocumentRequest(AmazonCloudSearchDocumentRequest document) throws AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException, JSONException {
 		JSONArray docs = new JSONArray();
 		docs.put(toJSON(document));
 		sendDocumentRequest(docs.toString());
@@ -227,7 +227,7 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
 		return sendDocumentsRequest(documents);
 	}
 
-	private <D extends AmazonCloudSearchDocumentRequest> List<D> sendDocumentsRequest(List<D> documents) throws JSONException, AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException {
+	public <D extends AmazonCloudSearchDocumentRequest> List<D> sendDocumentsRequest(List<D> documents) throws JSONException, AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException {
 		JSONArray docs = new JSONArray();
 		int currentRequestByteSize = docs.toString().getBytes().length;
 		int documentsIndex = 0;
@@ -421,6 +421,9 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
 					for(int i = 0; i < hitArray.length(); i++) {
 						JSONObject row = hitArray.getJSONObject(i);
 						Hit hit = this.getHitFromResult(row);
+						if(result.hits == null) {
+							result.hits = new ArrayList<Hit>();
+						}
 						result.hits.add(hit);
 					}
 				}

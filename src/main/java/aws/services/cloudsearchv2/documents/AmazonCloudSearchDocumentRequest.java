@@ -4,6 +4,10 @@ package aws.services.cloudsearchv2.documents;
  * This is the superclass for requests to add/update or delete a document.
  */
 public abstract class AmazonCloudSearchDocumentRequest {
+
+    public static final String ADD_DOCUMENT_REQUEST_TYPE = "add";
+    public static final String DELETE_DOCUMENT_REQUEST_TYPE = "delete";
+
     /**
      * A unique ID for the document (docid).
      *

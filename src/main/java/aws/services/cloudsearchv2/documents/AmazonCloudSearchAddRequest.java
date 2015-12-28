@@ -49,6 +49,6 @@ public class AmazonCloudSearchAddRequest extends AmazonCloudSearchDocumentReques
 
 	@Override
 	public String getRequestType() {
-		return "add";
+		return ADD_DOCUMENT_REQUEST_TYPE;
 	}
 }
