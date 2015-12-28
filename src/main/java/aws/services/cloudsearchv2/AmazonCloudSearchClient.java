@@ -256,17 +256,7 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
 			        .bodyString(requestBody, ContentType.APPLICATION_JSON)
 			        .execute();
 
-			HttpResponse resp = response.returnResponse();
-			responseBody = inputStreamToString(resp.getEntity().getContent());
-			JSONObject json = new JSONObject(responseBody); // convert it to JSON object
-			responseBody = json.toString(4); // format the json response
-			
-			int statusCode = resp.getStatusLine().getStatusCode();
-			if(statusCode >= 400 && statusCode < 500) {
-				throw new AmazonCloudSearchRequestException(requestBody, responseBody);
-			} else if(statusCode >= 500 && statusCode < 600){
-				throw new AmazonCloudSearchInternalServerException("Internal Server Error. Please try again as this might be a transient error condition.");
-			}
+			responseBody = this.getResponseBody(response.returnResponse());
 		} catch (ClientProtocolException e) {
 			throw new AmazonCloudSearchInternalServerException(e);
 		} catch (IOException e) {
@@ -372,17 +362,7 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
 			        .addHeader("Accept", ContentType.APPLICATION_JSON.getMimeType())
 			        .execute();
 
-			HttpResponse resp = response.returnResponse();
-			responseBody = inputStreamToString(resp.getEntity().getContent());
-	        JSONObject json = new JSONObject(responseBody); // convert it to JSON object
-	        responseBody = json.toString(4); // format the json response
-	            
-			int statusCode = resp.getStatusLine().getStatusCode();
-			if(statusCode >= 400 && statusCode < 500) {
-				throw new AmazonCloudSearchRequestException("", responseBody);
-			} else if(statusCode >= 500 && statusCode < 600){
-				throw new AmazonCloudSearchInternalServerException("Internal Server Error. Please try again as this might be a transient error condition.");
-			}
+			responseBody = this.getResponseBody(response.returnResponse());
 			
 			result = fromJSON(responseBody);
 		} catch (ClientProtocolException e) {
@@ -394,6 +374,31 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
         }
 		
 		return result;
+	}
+
+	public AmazonCloudSearchResult getDocument(String documentId) throws AmazonCloudSearchRequestException, AmazonCloudSearchInternalServerException {
+		AmazonCloudSearchQuery query = new AmazonCloudSearchQuery();
+		query.query = "_id:'" + documentId + "'";
+		query.queryParser = "structured";
+		AmazonCloudSearchResult result = this.search(query);
+		if (result != null && result.hits != null && result.hits.size() > 1) {
+			throw new AmazonCloudSearchRequestException("More than one document matches document ID " + documentId);
+		}
+		return result;
+	}
+
+	private String getResponseBody(HttpResponse response) throws AmazonCloudSearchInternalServerException, AmazonCloudSearchRequestException, JSONException, IOException {
+		String responseBody = inputStreamToString(response.getEntity().getContent());
+		JSONObject json = new JSONObject(responseBody); // convert it to JSON object
+		responseBody = json.toString(4); // format the json response
+
+		int statusCode = response.getStatusLine().getStatusCode();
+		if(statusCode >= 400 && statusCode < 500) {
+			throw new AmazonCloudSearchRequestException("", responseBody);
+		} else if(statusCode >= 500 && statusCode < 600){
+			throw new AmazonCloudSearchInternalServerException("Internal Server Error. Please try again as this might be a transient error condition.");
+		}
+		return responseBody;
 	}
 
 	private AmazonCloudSearchResult fromJSON(String responseBody) throws JSONException {
@@ -415,19 +420,7 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
 				if(hitArray != null) {
 					for(int i = 0; i < hitArray.length(); i++) {
 						JSONObject row = hitArray.getJSONObject(i);
-						Hit hit = new Hit();
-						hit.id = row.getString("id");
-						JSONObject fields = row.getJSONObject("fields");
-						String[] names = JSONObject.getNames(fields);
-						for(String name : names) {
-							if(hit.fields == null) {
-								hit.fields = new HashMap<String, String>();
-							}
-							hit.fields.put(name, fields.getString(name));
-						}
-						if(result.hits == null) {
-							result.hits = new ArrayList<Hit>();
-						}
+						Hit hit = this.getHitFromResult(row);
 						result.hits.add(hit);
 					}
 				}
@@ -435,5 +428,19 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
 		}
 		
 		return result;
+	}
+
+	private Hit getHitFromResult(JSONObject row) throws JSONException {
+		Hit hit = new Hit();
+		hit.id = row.getString("id");
+		JSONObject fields = row.getJSONObject("fields");
+		String[] names = JSONObject.getNames(fields);
+		for(String name : names) {
+			if(hit.fields == null) {
+				hit.fields = new HashMap<String, String>();
+			}
+			hit.fields.put(name, fields.getString(name));
+		}
+		return hit;
 	}
 }
