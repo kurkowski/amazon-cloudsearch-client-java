@@ -16,13 +16,21 @@ public class AmazonCloudSearchAddRequest extends AmazonCloudSearchDocumentReques
 	 * The document language as a two-letter language code, such as en for English.
 	 */
 	public String lang = "en";
-	
+
 	/**
 	 * A name-value pair for each document field
 	 */
 	public Map<String, Object> fields = new LinkedHashMap<String, Object>();
 
-	
+	public AmazonCloudSearchAddRequest() {
+		super();
+	}
+
+	public AmazonCloudSearchAddRequest(String id, Map<String, Object> fields) {
+		super(id);
+		this.fields = fields;
+	}
+
 	public void addField(String name, String value) {
 		fields.put(name, value);
 	}	
@@ -37,5 +45,10 @@ public class AmazonCloudSearchAddRequest extends AmazonCloudSearchDocumentReques
 	
 	public void addField(String name, List<String> values) {
 		fields.put(name, values);
-	}	
+	}
+
+	@Override
+	public String getRequestType() {
+		return "add";
+	}
 }

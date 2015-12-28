@@ -8,4 +8,17 @@ package aws.services.cloudsearchv2.documents;
  *
  */
 public class AmazonCloudSearchDeleteRequest extends AmazonCloudSearchDocumentRequest {
+
+    public AmazonCloudSearchDeleteRequest() {
+        super();
+    }
+
+    public AmazonCloudSearchDeleteRequest(String id) {
+        super(id);
+    }
+
+    @Override
+    public String getRequestType() {
+        return "delete";
+    }
 }

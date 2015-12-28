@@ -3,7 +3,7 @@ package aws.services.cloudsearchv2.documents;
 /**
  * This is the superclass for requests to add/update or delete a document.
  */
-public class AmazonCloudSearchDocumentRequest {
+public abstract class AmazonCloudSearchDocumentRequest {
     /**
      * A unique ID for the document (docid).
      *
@@ -19,4 +19,14 @@ public class AmazonCloudSearchDocumentRequest {
      * You must increase the version number every time you submit a new add or delete operation for a document.
      */
     public long version = 1;
+
+    public AmazonCloudSearchDocumentRequest() {
+        super();
+    }
+
+    public AmazonCloudSearchDocumentRequest(String id) {
+        this.id = id;
+    }
+
+    public abstract String getRequestType();
 }
