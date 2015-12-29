@@ -3,9 +3,7 @@ package aws.services.cloudsearchv2;
 import aws.services.cloudsearchv2.documents.AmazonCloudSearchAddRequest;
 import aws.services.cloudsearchv2.documents.AmazonCloudSearchDeleteRequest;
 import aws.services.cloudsearchv2.documents.AmazonCloudSearchDocumentRequest;
-import aws.services.cloudsearchv2.search.AmazonCloudSearchQuery;
-import aws.services.cloudsearchv2.search.AmazonCloudSearchResult;
-import aws.services.cloudsearchv2.search.Hit;
+import aws.services.cloudsearchv2.search.*;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
@@ -429,7 +427,35 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
 				}
 			}
 		}
-		
+
+		if (root.has("facets")) {
+			JSONObject facets = root.getJSONObject("facets");
+			if(facets != null) {
+				Iterator keys = facets.keys();
+				while (keys.hasNext()) {
+					String key = (String) keys.next();
+					JSONObject facet = facets.getJSONObject(key);
+					if (facet != null) {
+						JSONArray facetArray = facet.getJSONArray("buckets");
+						if(facetArray != null) {
+							List<Bucket> buckets = new ArrayList<Bucket>();
+							for(int i = 0; i < facetArray.length(); i++) {
+								JSONObject row = facetArray.getJSONObject(i);
+								Bucket bucket = new Bucket();
+								bucket.value = row.getString("value");
+								bucket.count = row.getInt("count");
+								buckets.add(bucket);
+							}
+							if (result.facets == null) {
+								result.facets = new HashMap<String, List<Bucket>>();
+							}
+							result.facets.put(key, buckets);
+						}
+					}
+				}
+			}
+		}
+
 		return result;
 	}
 
