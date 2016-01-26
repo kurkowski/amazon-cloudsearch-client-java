@@ -363,7 +363,7 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
 			responseBody = this.getResponseBody(response.returnResponse());
 			
 			result = fromJSON(responseBody);
-		} catch (ClientProtocolException e) {
+		} catch (ClientProtocolException|IOException e) {
 			throw new AmazonCloudSearchInternalServerException(e);
 		} catch (IOException e) {
 			throw new AmazonCloudSearchInternalServerException(e);
