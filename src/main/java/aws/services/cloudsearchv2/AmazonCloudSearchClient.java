@@ -353,18 +353,17 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
 		AmazonCloudSearchResult result = null;
 		String responseBody = null;
 		try {
-			Response response = Request.Get("https://" + getSearchEndpoint() + "/2013-01-01/search?" + query.build())
-			        .useExpectContinue()
-			        .version(HttpVersion.HTTP_1_1)
-                    .addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
-			        .addHeader("Accept", ContentType.APPLICATION_JSON.getMimeType())
-			        .execute();
+			Response response = Request.Post("https://" + getSearchEndpoint() + "/2013-01-01/search")
+					.useExpectContinue()
+					.version(HttpVersion.HTTP_1_1)
+					.addHeader("Content-Type", ContentType.APPLICATION_FORM_URLENCODED.getMimeType())
+					.addHeader("Accept", ContentType.APPLICATION_JSON.getMimeType())
+					.bodyString(query.build(), ContentType.APPLICATION_FORM_URLENCODED)
+					.execute();
 
 			responseBody = this.getResponseBody(response.returnResponse());
 			
 			result = fromJSON(responseBody);
-		} catch (ClientProtocolException|IOException e) {
-			throw new AmazonCloudSearchInternalServerException(e);
 		} catch (IOException e) {
 			throw new AmazonCloudSearchInternalServerException(e);
 		} catch (JSONException e) {
