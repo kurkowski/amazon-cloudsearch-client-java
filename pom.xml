@@ -5,11 +5,11 @@
   <artifactId>amazon-cloudsearch-client</artifactId>
   <packaging>jar</packaging>
   <version>1.3</version>
-  
+
   <name>amazon-cloudsearch-client-java</name>
   <description>AWS CloudSearch Client for Document Service and Searching</description>
   <url>http://maven.apache.org</url>
-  
+
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -17,11 +17,11 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-  
+
   <scm>
     <url>https://github.com/tahseen/amazon-cloudsearch-client-java.git</url>
   </scm>
-  
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -29,18 +29,18 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
-    <dependency>      
+    <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-cloudsearch</artifactId>
-      <version>1.9.33</version>
-    </dependency>    
-    <dependency>      
+      <version>1.11.38</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>fluent-hc</artifactId>
       <version>4.2</version>
     </dependency>
   </dependencies>
-  
+
   <build>
     <plugins>
       <plugin>
@@ -56,6 +56,14 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
       </plugin>
     </plugins>
   </build>

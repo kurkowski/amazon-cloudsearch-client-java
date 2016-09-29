@@ -1,11 +1,8 @@
 package aws.services.cloudsearchv2;
 
-import com.amazonaws.util.json.JSONObject;
-
-
 /**
  * This Exception is thrown when there is a problem with the request.
- * 
+ *
  * @author Tahseen Ur Rehman Fida
  * @email tahseen.ur.rehman@gmail.com
  *
@@ -17,12 +14,12 @@ public class AmazonCloudSearchRequestException extends Exception {
 
 	public AmazonCloudSearchRequestException(Throwable t) {
 		super(t);
-	}	
-	
+	}
+
 	public AmazonCloudSearchRequestException(String message, Throwable t) {
 		super(message, t);
-	}	
-	
+	}
+
 	public AmazonCloudSearchRequestException(String message) {
 		super(message);
 	}
