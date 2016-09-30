@@ -346,8 +346,6 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
 					.execute();
 
       ObjectMapper mapper = new ObjectMapper();
-
-
 			responseBody = this.getResponseBody(response.returnResponse());
       result = mapper.readValue(responseBody, AmazonCloudSearchResult.class);
 		} catch (IOException e) {
