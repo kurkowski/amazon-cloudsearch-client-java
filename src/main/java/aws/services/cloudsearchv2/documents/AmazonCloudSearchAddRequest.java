@@ -6,7 +6,7 @@ import java.util.Map;
 
 /**
  * This is class is used to request add or update of a document.
- * 
+ *
  * @author Tahseen Ur Rehman Fida
  * @email tahseen.ur.rehman@gmail.com
  *
@@ -33,16 +33,16 @@ public class AmazonCloudSearchAddRequest extends AmazonCloudSearchDocumentReques
 
 	public void addField(String name, String value) {
 		fields.put(name, value);
-	}	
-	
+	}
+
 	public void addField(String name, Integer value) {
 		fields.put(name, value);
-	}	
-		
+	}
+
 	public void addField(String name, Long value) {
 		fields.put(name, value);
-	}	
-	
+	}
+
 	public void addField(String name, List<String> values) {
 		fields.put(name, values);
 	}

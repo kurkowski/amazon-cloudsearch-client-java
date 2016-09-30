@@ -1,5 +1,8 @@
 package aws.services.cloudsearchv2.documents;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+
 /**
  * This is the superclass for requests to add/update or delete a document.
  */
@@ -32,5 +35,6 @@ public abstract class AmazonCloudSearchDocumentRequest {
         this.id = id;
     }
 
+    @JsonProperty("type")
     public abstract String getRequestType();
 }

@@ -360,7 +360,7 @@ public class AmazonCloudSearchClient extends com.amazonaws.services.cloudsearchv
 		query.query = "_id:'" + documentId + "'";
 		query.queryParser = "structured";
 		AmazonCloudSearchResult result = this.search(query);
-		if (result != null && result.hits != null && result.hits.size() > 1) {
+		if (result != null && result.getHits() != null &&  result.getHits().size() > 1) {
 			throw new AmazonCloudSearchRequestException("More than one document matches document ID " + documentId);
 		}
 		return result;
