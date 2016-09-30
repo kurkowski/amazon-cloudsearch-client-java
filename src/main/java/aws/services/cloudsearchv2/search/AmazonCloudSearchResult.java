@@ -14,6 +14,10 @@ import java.util.Map;
  */
 public class AmazonCloudSearchResult {
 
+	public AmazonCloudSearchResult() {
+		this.facets = new HashMap<>();
+	}
+
 	public Status status;
 
 	public long time;
@@ -27,7 +31,7 @@ public class AmazonCloudSearchResult {
 	private Map<String, Buckets> facets;
 
 	public List<Hit> getHits() {
-		if (hits == null) {
+		if (hits == null || hits.hit == null) {
 			return new ArrayList<>();
 		}
 		return hits.hit;
